@@ -1,0 +1,102 @@
+{
+  "Rowan": [
+    {
+      "personality_key": "leader_pragmatic",
+      "stance": "pro-survival",
+      "belief_in_divine": 30,
+      "memorable_quote": "Pray if you must, but keep your eyes on the horizon. The heavens won't farm our wheat."
+    },
+    {
+      "personality_key": "leader_fanatic",
+      "stance": "pro-theocracy",
+      "belief_in_divine": 100,
+      "memorable_quote": "Every disaster is a lesson. Every blessing is a reward. We must align perfectly with the divine will."
+    },
+    {
+      "personality_key": "leader_weary",
+      "stance": "pro-appeasement",
+      "belief_in_divine": 50,
+      "memorable_quote": "I have seen too many floods to believe in mercy. We survive because we yield."
+    }
+  ],
+  "Aldric": [
+    {
+      "personality_key": "priest_doomsayer",
+      "stance": "pro-repentance",
+      "belief_in_divine": 100,
+      "memorable_quote": "The end draws near! We are punished for our sins, and only suffering will cleanse us."
+    },
+    {
+      "personality_key": "priest_compassionate",
+      "stance": "pro-charity",
+      "belief_in_divine": 90,
+      "memorable_quote": "The divine tests us to see how we treat each other in the dark. Protect the weak above all else."
+    },
+    {
+      "personality_key": "priest_corrupt",
+      "stance": "pro-authority",
+      "belief_in_divine": 70,
+      "memorable_quote": "The heavens demand sacrifice, and as their chosen voice, I demand absolute obedience."
+    }
+  ],
+  "Tomas": [
+    {
+      "personality_key": "builder_arrogant",
+      "stance": "pro-engineering",
+      "belief_in_divine": 10,
+      "memorable_quote": "Give me enough stone and I will build a wall that even the gods cannot break."
+    },
+    {
+      "personality_key": "builder_desperate",
+      "stance": "pro-innovation",
+      "belief_in_divine": 40,
+      "memorable_quote": "If we don't try something entirely new, we die. It is that simple."
+    },
+    {
+      "personality_key": "builder_paranoid",
+      "stance": "pro-defense",
+      "belief_in_divine": 20,
+      "memorable_quote": "They're coming for us. The water, the fire, the unseen. Reinforce everything."
+    }
+  ],
+  "Martha": [
+    {
+      "personality_key": "farmer_bitter",
+      "stance": "pro-hoarding",
+      "belief_in_divine": 30,
+      "memorable_quote": "You cannot eat prayers. Lock the granaries and let the weak starve if they must."
+    },
+    {
+      "personality_key": "farmer_earth_mother",
+      "stance": "pro-nature",
+      "belief_in_divine": 80,
+      "memorable_quote": "The land provides if we listen to it. We must not anger the soil by forcing our will."
+    },
+    {
+      "personality_key": "farmer_expansionist",
+      "stance": "pro-growth",
+      "belief_in_divine": 50,
+      "memorable_quote": "Why stop at surviving? We must claim more land, plant more seeds, and conquer this valley."
+    }
+  ],
+  "Elric": [
+    {
+      "personality_key": "merchant_ruthless",
+      "stance": "pro-wealth",
+      "belief_in_divine": 10,
+      "memorable_quote": "A disaster for the farmers is a boom for the grain merchants. Prices go up tomorrow."
+    },
+    {
+      "personality_key": "merchant_diplomatic",
+      "stance": "pro-trade",
+      "belief_in_divine": 50,
+      "memorable_quote": "We cannot survive alone in the dark. If we open our borders, the caravans will save us."
+    },
+    {
+      "personality_key": "merchant_smuggler",
+      "stance": "pro-corruption",
+      "belief_in_divine": 30,
+      "memorable_quote": "The council makes the rules, but coin makes the reality. I can get you what you need, for a price."
+    }
+  ]
+}

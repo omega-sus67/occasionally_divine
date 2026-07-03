@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occasionally Divine</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Cinzel: carved/biblical display · Merriweather: narrative serif · Inter: UI/numbers · Silkscreen: pixel accents -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Atmosphere Layers -->
+    <canvas id="atmosphere-canvas" class="atmosphere-canvas"></canvas>
+    <div id="omen-overlay" class="omen-overlay"></div>
+    <div class="grain-overlay"></div>
+    <div class="vignette-overlay"></div>
+    <div id="danger-overlay" class="danger-overlay"></div>
+    <div id="spectacle-overlay" class="spectacle-overlay hidden"></div>
+
+    <!-- Title Screen -->
+    <div id="title-screen" class="title-screen">
+        <div class="title-screen-inner">
+            <div class="title-emblem">✹</div>
+            <h1 class="title-screen-name">Occasionally Divine</h1>
+            <p class="title-screen-tagline">You are the unseen god of a kingdom that remembers everything you do to it.</p>
+
+            <div class="title-screen-menu">
+                <button id="title-new-btn" class="title-menu-btn">New Game</button>
+                <button id="title-load-btn" class="title-menu-btn" disabled>Load Game</button>
+                <button id="title-credits-btn" class="title-menu-btn secondary">Credits</button>
+            </div>
+
+            <div class="title-screen-footnote">Powered by a Cognee knowledge graph</div>
+        </div>
+    </div>
+
+    <!-- Credits Modal -->
+    <div id="credits-modal" class="lore-modal hidden">
+        <div class="lore-content">
+            <button id="close-credits-btn" class="close-lore-btn">&times;</button>
+            <h3 class="lore-title">Credits</h3>
+            <div class="lore-meta">Occasionally Divine</div>
+            <p class="lore-narrative">
+                A god-simulator where the kingdom's memory is a real knowledge graph, not flavor text —
+                every crisis, adaptation, and rumor is woven into <strong>Cognee</strong> and retrieved
+                to shape what happens next.
+            </p>
+            <div class="lore-intervention">
+                <span>Built With</span>
+                <p>Cognee &middot; Gemini 2.5 Flash-Lite &middot; FastAPI &middot; SQLAlchemy &middot; Ollama (nomic-embed-text)</p>
+            </div>
+            <div class="lore-intervention">
+                <span>Made For</span>
+                <p>The Cognee Hackathon</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+
+        <!-- TOP: Divine Economy, Realm Plaque, Actions -->
+        <header class="top-bar">
+            <div class="top-left-cluster">
+                <div class="mana-orb" id="mana-orb" title="Divine Influence">
+                    <div class="mana-fill" id="mana-fill"></div>
+                    <div class="mana-orb-inner">
+                        <span class="mana-label">MANA</span>
+                        <span id="mana-val" class="mana-value">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="realm-plaque">
+                <div class="realm-name" id="realm-name">The Realm</div>
+                <div class="realm-time" id="realm-time">Year — · —</div>
+                <div class="realm-shrine" id="realm-shrine">The Wooden Altar</div>
+            </div>
+
+            <div class="top-right-cluster">
+                <button id="oracle-btn" class="oracle-btn">Consult Oracle</button>
+                <button id="tapestry-btn" class="tapestry-btn">Tapestry of Fate</button>
+            </div>
+        </header>
+
+        <!-- STAT RIBBON -->
+        <div class="stat-ribbon" id="stat-ribbon">
+            <div class="stat-meter" data-stat="food">
+                <div class="stat-meter-head"><span class="stat-name">Food</span><span id="stat-food" class="stat-val">--</span></div>
+                <div class="stat-bar"><div class="stat-bar-fill" id="bar-food"></div></div>
+                <div class="delta-mount" id="delta-food"></div>
+            </div>
+            <div class="stat-meter" data-stat="faith">
+                <div class="stat-meter-head"><span class="stat-name">Faith</span><span id="stat-faith" class="stat-val">--</span></div>
+                <div class="stat-bar"><div class="stat-bar-fill" id="bar-faith"></div></div>
+                <div class="delta-mount" id="delta-faith"></div>
+            </div>
+            <div class="stat-meter" data-stat="unrest">
+                <div class="stat-meter-head"><span class="stat-name">Unrest</span><span id="stat-unrest" class="stat-val">--</span></div>
+                <div class="stat-bar"><div class="stat-bar-fill" id="bar-unrest"></div></div>
+                <div class="delta-mount" id="delta-unrest"></div>
+            </div>
+            <div class="stat-meter" data-stat="morale">
+                <div class="stat-meter-head"><span class="stat-name">Despair</span><span id="stat-morale" class="stat-val">--</span></div>
+                <div class="stat-bar"><div class="stat-bar-fill" id="bar-morale"></div></div>
+                <div class="delta-mount" id="delta-morale"></div>
+            </div>
+            <div class="stat-meter" data-stat="trust">
+                <div class="stat-meter-head"><span class="stat-name">Trust</span><span id="stat-trust" class="stat-val">--</span></div>
+                <div class="stat-bar"><div class="stat-bar-fill" id="bar-trust"></div></div>
+                <div class="delta-mount" id="delta-trust"></div>
+            </div>
+        </div>
+
+        <!-- MIDDLE SECTION -->
+        <main class="main-content">
+
+            <!-- LEFT: Elder Council -->
+            <aside class="left-panel">
+                <h2 class="panel-title">The Council</h2>
+                <div id="elders-list" class="elders-list">
+                    <!-- Elders injected via JS -->
+                </div>
+            </aside>
+
+            <!-- CENTER: Shrine + Situation Engine -->
+            <section class="center-stage">
+
+                <!-- Realm banner: shrine emblem + dread-to-council meter -->
+                <div class="realm-banner">
+                    <div class="shrine-emblem" id="shrine-emblem"><!-- SVG injected --></div>
+                    <div class="realm-pulse">
+                        <div class="realm-mood" id="realm-mood">The realm holds its breath.</div>
+                        <div class="dread-meter" title="When Unrest reaches 70, the Council convenes.">
+                            <div class="dread-label"><span>Realm Unrest</span><span id="dread-threshold">Council at 70</span></div>
+                            <div class="dread-bar"><div class="dread-fill" id="dread-fill"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="situation-modal" id="situation-modal">
+                    <div class="narrative-frame" id="narrative-frame">
+                        <div class="situation-meta">
+                            <span class="situation-category" id="situation-category">—</span>
+                            <span class="situation-severity" id="situation-severity"></span>
+                        </div>
+                        <button class="consequence-badge hidden" id="consequence-badge" title="Open the Tapestry of Fate to trace this chain">
+                            ⟴ CONSEQUENCE · born of <span id="consequence-parent-title">—</span>
+                        </button>
+                        <h1 id="situation-title" class="situation-title">--</h1>
+                        <p id="situation-narrative" class="situation-narrative">--</p>
+
+                        <details class="memory-echoes" id="memory-echoes" hidden>
+                            <summary>Echoes of the Past <span id="memory-echoes-count"></span></summary>
+                            <ul id="memory-echoes-list"></ul>
+                        </details>
+                    </div>
+
+                    <div class="interventions-label" id="interventions-label">Your Divine Response</div>
+                    <div class="interventions-container" id="interventions-container">
+                        <!-- Intervention cards injected via JS -->
+                    </div>
+
+                    <div class="minor-cards-section" id="minor-cards-section" hidden>
+                        <div class="interventions-label minor-cards-label">Lesser Tremors of the Realm</div>
+                        <div class="minor-cards-container" id="minor-cards-container">
+                            <!-- Minor per-parameter cards injected via JS -->
+                        </div>
+                    </div>
+
+                    <div class="proceed-bar" id="proceed-bar" hidden>
+                        <div class="proceed-mana" id="proceed-mana">Divine Influence remaining: —</div>
+                        <button class="proceed-btn" id="proceed-btn" disabled>Let the Season Turn</button>
+                        <div class="proceed-hint" id="proceed-hint">Choose a response and settle every tremor to proceed.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT: Chronicle, Adaptations, Whispers -->
+            <aside class="right-panel">
+                <h2 class="panel-title">The Chronicle</h2>
+                <ul id="chronicle-list" class="chronicle-list">
+                    <!-- Chronicle entries injected via JS -->
+                </ul>
+
+                <h2 class="panel-title mt-2">Adaptations</h2>
+                <ul id="adaptations-list" class="adaptations-list">
+                    <!-- Adaptations injected via JS -->
+                </ul>
+
+                <!-- Adaptation Explanation Detail Box -->
+                <div id="adaptation-detail-box" class="adaptation-detail-box hidden">
+                    <div class="detail-header">
+                        <span id="detail-title" class="detail-title">Adaptation Journey</span>
+                        <button id="close-detail-btn" class="close-btn">&times;</button>
+                    </div>
+                    <p id="detail-desc" class="detail-desc"></p>
+                </div>
+
+                <h2 class="panel-title mt-2">Whispers of the Realm</h2>
+                <ul id="rumors-list" class="rumors-list">
+                    <!-- Rumors injected via JS -->
+                </ul>
+            </aside>
+
+        </main>
+
+        <!-- Tapestry of Fate Modal -->
+        <div id="tapestry-modal" class="tapestry-modal hidden">
+            <div class="tapestry-header">
+                <h2 class="tapestry-title">The Tapestry of Fate</h2>
+                <button id="close-tapestry-btn" class="close-tapestry-btn">&times;</button>
+            </div>
+            <div id="tapestry-tree-container" class="tapestry-tree-container">
+                <!-- Recursive tree injected via JS -->
+            </div>
+        </div>
+
+        <!-- Lore Detail Modal (Parchment Style) -->
+        <div id="lore-modal" class="lore-modal hidden">
+            <div class="lore-content">
+                <button id="close-lore-btn" class="close-lore-btn">&times;</button>
+                <h3 id="lore-title" class="lore-title">--</h3>
+                <div class="lore-meta" id="lore-meta">--</div>
+                <p id="lore-narrative" class="lore-narrative">--</p>
+                <div class="lore-intervention">
+                    <span>The Divine Decree</span>
+                    <p id="lore-decree">--</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elder Dossier Modal -->
+        <div id="dossier-modal" class="dossier-modal hidden">
+            <div class="dossier-content">
+                <button id="close-dossier-btn" class="close-lore-btn">&times;</button>
+
+                <!-- Loading State -->
+                <div id="dossier-loading" class="dossier-loading hidden">
+                    <div class="spinner"></div>
+                    <p>Consulting the Royal Archives...</p>
+                </div>
+
+                <!-- Content State -->
+                <div id="dossier-body">
+                    <div class="dossier-header">
+                        <div id="dossier-avatar" class="dossier-avatar-large"></div>
+                        <div class="dossier-titles">
+                            <h3 id="dossier-name" class="lore-title">--</h3>
+                            <span id="dossier-role" class="lore-meta">--</span>
+                        </div>
+                    </div>
+
+                    <div class="dossier-stats">
+                        <div class="dossier-stat">
+                            <label>Current Mood</label>
+                            <div id="dossier-mood" class="dossier-mood-val">--</div>
+                        </div>
+                        <div class="dossier-stat">
+                            <label>Belief in the Divine</label>
+                            <div class="belief-bar-container">
+                                <div id="dossier-belief-bar" class="belief-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lore-intervention" style="margin-bottom: 2rem;">
+                        <span>Living Biography</span>
+                        <p id="dossier-biography" class="dossier-biography-text">--</p>
+                    </div>
+
+                    <h4 class="dossier-section-title">Known Relationships</h4>
+                    <ul id="dossier-relationships" class="dossier-relationships">
+                        <!-- Injected via JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oracle Modal -->
+        <div id="oracle-modal" class="oracle-modal hidden">
+            <div class="oracle-content">
+                <button id="close-oracle-btn" class="close-lore-btn">&times;</button>
+                <div class="oracle-header">
+                    <h2>The Oracle of the Archives</h2>
+                    <p>Ask a question, and the Tapestry shall reveal its secrets.</p>
+                </div>
+
+                <div id="oracle-chat-log" class="oracle-chat-log">
+                    <div class="oracle-msg oracle">Greetings, Divine One. What forgotten history do you seek?</div>
+                </div>
+
+                <div class="oracle-input-area">
+                    <input type="text" id="oracle-input" class="oracle-input" placeholder="Type your question..." autocomplete="off" />
+                    <button id="oracle-send-btn" class="oracle-send-btn">Ask</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Council Chamber Overlay -->
+        <div id="council-overlay" class="council-overlay hidden">
+            <div class="council-chamber">
+                <div class="council-header">
+                    <div class="council-title-block">
+                        <span class="council-eyebrow">The Council Convenes</span>
+                        <h2 class="council-title" id="council-title">The Elders Debate</h2>
+                    </div>
+                    <button id="council-skip-btn" class="council-skip-btn">Skip &raquo;</button>
+                </div>
+
+                <div class="council-body">
+                    <!-- LEFT: retrieved memories (the graph made visible) -->
+                    <aside class="council-memories">
+                        <h3 class="council-sub">Recalled from the Tapestry</h3>
+                        <ul id="council-memory-list" class="council-memory-list">
+                            <li class="council-memory-empty">The elders search their memory...</li>
+                        </ul>
+                    </aside>
+
+                    <!-- RIGHT: streamed debate -->
+                    <div class="council-debate" id="council-debate">
+                        <!-- Dialogue lines streamed here -->
+                    </div>
+                </div>
+
+                <!-- Decree footer -->
+                <div class="council-decree hidden" id="council-decree">
+                    <div class="decree-scroll">
+                        <span class="decree-eyebrow">The Council Proposes</span>
+                        <h3 class="decree-proposal" id="decree-proposal">--</h3>
+                        <p class="decree-effect" id="decree-effect">--</p>
+                        <button id="decree-stamp-btn" class="decree-stamp-btn">
+                            <span class="seal">✹</span> Grant the Divine Seal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Season-Turn Interstitial -->
+        <div id="interstitial-overlay" class="interstitial-overlay hidden">
+            <div class="interstitial-inner">
+                <div class="interstitial-plaque" id="interstitial-plaque">Year — · —</div>
+                <div class="mitigation-banner hidden" id="mitigation-banner">
+                    <div class="mitigation-title">⛨ THE KINGDOM REMEMBERS</div>
+                    <div class="mitigation-text" id="mitigation-text">--</div>
+                </div>
+                <p class="interstitial-epilogue" id="interstitial-epilogue">--</p>
+                <button class="interstitial-proceed hidden" id="interstitial-proceed">Proceed &rarr;</button>
+            </div>
+        </div>
+
+        <!-- Loading Veil -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="loading-sigil"></div>
+            <p class="loading-text" id="loading-text">The threads of fate are weaving...</p>
+        </div>
+
+        <!-- Endgame (Victory / Defeat) -->
+        <div id="endgame-overlay" class="endgame-overlay hidden">
+            <div class="endgame-inner">
+                <h1 class="endgame-title" id="endgame-title">--</h1>
+                <p class="endgame-text" id="endgame-text">--</p>
+                <button id="endgame-restart-btn" class="endgame-restart-btn">Begin a New Age</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="atmosphere.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
